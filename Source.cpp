@@ -33,9 +33,12 @@ bool drawing = false;
 
 sf::Vector2i lastGridPos(0, 0);
 
+sf::Texture tileTexture[TILESIZE];
+
 struct tileData {
     int tile;
     std::string meta;
+    Tile tileObject;
 };
 
 std::map<int, std::map<int, std::map<int, tileData>>> tileMap;
@@ -95,6 +98,10 @@ void floodFill(int x, int y, int currentTile, int newTile, int depth = 0)
     // replace the color
     tileMap[currentLayer][x][y].tile = newTile;
 
+    // add the tile object
+    tileMap[currentLayer][x][y].tileObject.setPosition(sf::Vector2f(x * CELLSIZE, y * CELLSIZE));
+    tileMap[currentLayer][x][y].tileObject.setTexture(tileTexture[newTile]);
+
     std::cout << "coloring: " << x << " " << y << " " << tileMap[currentLayer][x][y].tile << std::endl;
 
     // recursively call for north, east, south, west
@@ -146,6 +153,12 @@ int main()
 
     // default tool 1
     toolBar[0].press(true);
+
+    // load textures into array
+    for (int i = 0; i < TILESIZE; i++)
+    {
+        tileTexture[i].loadFromFile("src/tiles/tile (" + std::to_string(i+1) + ").png");
+    }
 
     // add tile buttons
     Button *tileBar = new Button[TILESIZE];
@@ -414,8 +427,6 @@ int main()
 
         ////////////////////////////////////////
         // draw all the drawn tiles from data
-        // 
-        // TODO: OPTIZE THIS
         ////////////////////////////////////////
         for (auto const& layer : tileMap)
         {
@@ -423,14 +434,14 @@ int main()
             {
                 for (auto const& y : x.second)
                 {
-                    Tile tile(sf::Vector2f(x.first * CELLSIZE, y.first * CELLSIZE), "src/tiles/tile (" + std::to_string(y.second.tile + 1) + ").png");
+                    // Tile tile(sf::Vector2f(x.first * CELLSIZE, y.first * CELLSIZE), "src/tiles/tile (" + std::to_string(y.second.tile + 1) + ").png");
                     
                     if (layer.first != currentLayer)
                     {
-                        tile.setOpacity(80);
+                        tileMap[layer.first][x.first][y.first].tileObject.setOpacity(80);
                     }
 
-                    tile.draw(window);
+                    tileMap[layer.first][x.first][y.first].tileObject.draw(window);
                 }
             }
         }
@@ -447,6 +458,11 @@ int main()
                             for (int j = -brushSize; j <= brushSize; j++)
                             {
                                 tileMap[currentLayer][lastGridPos.x + i][lastGridPos.y + j].tile = currentTile;
+                                tileMap[currentLayer][lastGridPos.x + i][lastGridPos.y + j].meta = "";
+
+                                // add the tile object
+                                tileMap[currentLayer][lastGridPos.x + i][lastGridPos.y + j].tileObject.setPosition(sf::Vector2f((lastGridPos.x + i) * CELLSIZE, (lastGridPos.y + j) * CELLSIZE));
+                                tileMap[currentLayer][lastGridPos.x + i][lastGridPos.y + j].tileObject.setTexture(tileTexture[currentTile]);
                             }
                         }
 
