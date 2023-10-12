@@ -9,10 +9,11 @@
 #include "Tile.h"
 
 const int CELLSIZE = 64;
-const int TOOLSIZE = 7;
+const int TOOLSIZE = 10;
 const int RADIOTOOLSIZE = 5;
 const int TILESIZE = 16;
 const int LAYERSIZE = 3;
+const int MAXLAYERSIZE = 10;
 const int HINTGRIDSIZE = 3;
 const int PANNINGSPEED = 4;
 
@@ -85,11 +86,16 @@ int main()
     Button toolBtn3(sf::Vector2f(20.f, 190.f), "Dropper", MyFont, "src/assets/dropper.png");
     Button toolBtn4(sf::Vector2f(20.f, 260.f), "Fill", MyFont, "src/assets/fill.png");
     Button toolBtn5(sf::Vector2f(20.f, 330.f), "Zoom", MyFont, "src/assets/zoom.png");
-    Button saveBtn(sf::Vector2f(20.f, 400.f), "Save", MyFont, "src/assets/save.png");
-    Button loadBtn(sf::Vector2f(20.f, 470.f), "Load", MyFont, "src/assets/load.png");
+
+    // more tool buttons on the right side of the screen
+    Button clearBtn(sf::Vector2f(1200.f, 50.f), "Clear", MyFont, "src/assets/clear.png");
+    Button undoBtn(sf::Vector2f(1200.f, 120.f), "Undo", MyFont, "src/assets/undo.png");
+    Button redoBtn(sf::Vector2f(1200.f, 190.f), "Redo", MyFont, "src/assets/redo.png");
+    Button saveBtn(sf::Vector2f(1200.f, 260.f), "Save", MyFont, "src/assets/save.png");
+    Button loadBtn(sf::Vector2f(1200.f, 330.f), "Load", MyFont, "src/assets/load.png");
 
     // add tool bar buttons into an array
-    Button toolBar[TOOLSIZE] = { toolBtn1, toolBtn2, toolBtn3, toolBtn4, toolBtn5, saveBtn, loadBtn};
+    Button toolBar[TOOLSIZE] = { toolBtn1, toolBtn2, toolBtn3, toolBtn4, toolBtn5, saveBtn, loadBtn, clearBtn, undoBtn, redoBtn};
 
     // default tool 1
     toolBar[0].press(true);
@@ -179,16 +185,13 @@ int main()
                 {
                     drawing = false;
 
-                    if (toolBar[5].isMouseOver(window))
+                    for (int i = 5; i < TOOLSIZE; i++)
                     {
-                        toolBar[5].press(false);
+                        if (toolBar[i].isMouseOver(window))
+                        {
+                            toolBar[i].press(false);
 
-                    }
-
-                    if (toolBar[6].isMouseOver(window))
-                    {
-                        toolBar[6].press(false);
-
+                        }
                     }
                 }
             }
@@ -238,7 +241,7 @@ int main()
                     }
                 }
 
-                // check for other tool button
+                // save button
                 if (toolBar[5].isMouseOver(window))
                 {
                     std::cout << "Save" << std::endl;
@@ -260,6 +263,7 @@ int main()
                     MyFile.close();
                 }
 
+                // load button
                 if (toolBar[6].isMouseOver(window))
                 {
                     std::cout << "Load" << std::endl;
@@ -278,6 +282,29 @@ int main()
                         tileMap[layer][x][y].tile = tile;
                         tileMap[layer][x][y].meta = "";
                     }
+                }
+
+                // clear button
+                if (toolBar[7].isMouseOver(window))
+                {
+                    std::cout << "Clear" << std::endl;
+                    toolBar[7].press(true);
+
+                    tileMap.clear();
+                }
+
+                // undo button
+                if (toolBar[8].isMouseOver(window))
+                {
+                    std::cout << "Undo" << std::endl;
+                    toolBar[8].press(true);
+                }
+
+                // redo button
+                if (toolBar[9].isMouseOver(window))
+                {
+                    std::cout << "Redo" << std::endl;
+                    toolBar[9].press(true);
                 }
 
                 // check for tile button press
