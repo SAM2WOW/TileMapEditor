@@ -2,7 +2,7 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/View.hpp>
 #include <iostream>
-#include <filesystem>
+#include <fstream>
 #include <map>
 #include <algorithm>
 #include "Button.h"
@@ -11,7 +11,7 @@
 const int CELLSIZE = 64;
 const int TOOLSIZE = 7;
 const int RADIOTOOLSIZE = 5;
-const int TILESIZE = 9;
+const int TILESIZE = 16;
 const int LAYERSIZE = 3;
 const int HINTGRIDSIZE = 3;
 const int PANNINGSPEED = 4;
@@ -41,10 +41,25 @@ std::map<int, std::map<int, std::map<int, tileData>>> tileMap;
 
 bool isOverBtn = false;
 
+// flood filling algorithm
+// https://www.educative.io/answers/flood-fill-algorithm-in-cpp
+//
+// TODO: Actually finish this
+//
+void floodFill(int x, int y, int tile)
+{
+    // find the bounds of the map
+    int minX = 0;
+    int maxX = 0;
+    int minY = 0;
+    int maxY = 0;
+
+}
+
 int main()
 {
     // create the window
-    sf::RenderWindow window(sf::VideoMode(1280, 720), "Super Tile Map Editor");
+    sf::RenderWindow window(sf::VideoMode(1280, 720), "Easy Tile Map Editor");
 
     // Load the font from a file2
     sf::Font MyFont;
@@ -184,8 +199,9 @@ int main()
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
                     // convert the position to a grid cordinate
-                    int gridX = floor(event.mouseButton.x / CELLSIZE);
-                    int gridY = floor(event.mouseButton.y / CELLSIZE);
+                    sf::Vector2f worldPosition = window.mapPixelToCoords(sf::Mouse::getPosition(window), worldView);
+                    int gridX = floor(round(worldPosition.x) / CELLSIZE);
+                    int gridY = floor(round(worldPosition.x) / CELLSIZE);
 
                     if (!isOverBtn) {
                         drawing = true;
@@ -193,19 +209,7 @@ int main()
                         // check for tool eyedropper
                         if (currentTool == Tool::eyedropper) 
                         {
-                            if (tileMap[currentLayer].find(gridX) != tileMap[currentLayer].end())
-                            {
-                                if (tileMap[currentLayer][gridX].find(gridY) != tileMap[currentLayer][gridX].end())
-                                {
-                                    // set the current tile to the tile that is clicked
-                                    currentTile = tileMap[currentLayer][gridX][gridY].tile;
-
-                                    for (int i = 0; i < TILESIZE; i++)
-                                    {
-                                        tileBar[i].press(i == currentTile);
-                                    }
-                                }
-                            }
+                            // TODO: move the eyedropper function here for optimization
                         }
                     }
                 }
@@ -240,13 +244,40 @@ int main()
                     std::cout << "Save" << std::endl;
                     toolBar[5].press(true);
 
+                    std::ofstream MyFile("tilemap.txt");
+                    
+                    for (auto const& layer : tileMap)
+                    {
+                        for (auto const& x : layer.second)
+                        {
+                            for (auto const& y : x.second)
+                            {
+                                MyFile << layer.first << " " << x.first << " " << y.first << " " << y.second.tile << " " << y.second.meta << std::endl;
+                            }
+                        }
+                    }
+
+                    MyFile.close();
                 }
 
                 if (toolBar[6].isMouseOver(window))
                 {
                     std::cout << "Load" << std::endl;
                     toolBar[6].press(true);
+                    
+                    // clear map
+                    tileMap.clear();
 
+                    std::ifstream MyFile("tilemap.txt");
+                    
+                    int layer, x, y, tile;
+                    std::string meta;
+
+                    while (MyFile >> layer >> x >> y >> tile)
+                    {
+                        tileMap[layer][x][y].tile = tile;
+                        tileMap[layer][x][y].meta = "";
+                    }
                 }
 
                 // check for tile button press
@@ -354,6 +385,20 @@ int main()
                         break;
                     
                     case Tool::eyedropper:
+                        if (tileMap[currentLayer].find(lastGridPos.x) != tileMap[currentLayer].end())
+                        {
+                            if (tileMap[currentLayer][lastGridPos.x].find(lastGridPos.y) != tileMap[currentLayer][lastGridPos.x].end())
+                            {
+                                // set the current tile to the tile that is clicked
+                                currentTile = tileMap[currentLayer][lastGridPos.x][lastGridPos.y].tile;
+
+                                for (int i = 0; i < TILESIZE; i++)
+                                {
+                                    tileBar[i].press(i == currentTile);
+                                }
+                            }
+                        }
+
                         break;
                     
                     case Tool::fill:
