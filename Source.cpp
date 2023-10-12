@@ -37,8 +37,17 @@ sf::Vector2i lastGridPos(0, 0);
 
 sf::Texture tileTexture[TILESIZE];
 
-std::stack<int> undoStack;
-std::stack<int> redoStack;
+enum Action { edit, clear };
+struct tileAction {
+    Action action;
+    int x;
+    int y;
+    int currentTile;
+    int newTile;
+};
+
+std::stack<tileAction> undoStack;
+std::stack<tileAction> redoStack;
 
 struct tileData {
     int tile;
@@ -476,6 +485,10 @@ int main()
                                 // add the tile object
                                 tileMap[currentLayer][lastGridPos.x + i][lastGridPos.y + j].tileObject.setPosition(sf::Vector2f((lastGridPos.x + i) * CELLSIZE, (lastGridPos.y + j) * CELLSIZE));
                                 tileMap[currentLayer][lastGridPos.x + i][lastGridPos.y + j].tileObject.setTexture(tileTexture[currentTile]);
+
+                                // add to the history
+                                // // TODOs
+                                // undoStack.push(tileAction());
                             }
                         }
 
