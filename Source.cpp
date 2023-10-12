@@ -5,6 +5,8 @@
 #include <fstream>
 #include <map>
 #include <algorithm>
+#include <stack>
+
 #include "Button.h"
 #include "Tile.h"
 
@@ -34,6 +36,9 @@ bool drawing = false;
 sf::Vector2i lastGridPos(0, 0);
 
 sf::Texture tileTexture[TILESIZE];
+
+std::stack<int> undoStack;
+std::stack<int> redoStack;
 
 struct tileData {
     int tile;

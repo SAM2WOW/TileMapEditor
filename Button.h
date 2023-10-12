@@ -29,8 +29,6 @@ public:
 		buttonText.setCharacterSize(15);
 		buttonText.setPosition(position + sf::Vector2f(2.f, 0.f));
 		buttonText.setFillColor(sf::Color(0xffffff99));
-
-		pressed = false;
 	}
 
 	sf::Vector2f getPosition() {
@@ -70,6 +68,10 @@ public:
 	}
 	
 	bool isMouseOver(sf::RenderWindow& window) {
+		if (disabled) {
+			return false;
+		}
+
 		sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 		sf::FloatRect bounds = button.getGlobalBounds();
 
@@ -86,6 +88,10 @@ public:
 	
 	void press(bool state) {
 		pressed = state;
+
+		if (disabled) {
+			return;
+		}
 
 		if (pressed) {
 			//button.setSize(sf::Vector2f(100.f, 64.f));
@@ -105,10 +111,26 @@ public:
 		return pressed;
 	}
 
+	bool isDisabled() {
+		return disabled;
+	}
+
+	void setDisabled(bool state) {
+		disabled = state;
+
+		if (disabled) {
+			buttonText.setFillColor(sf::Color(0xffffff10));
+		}
+		else {
+			buttonText.setFillColor(sf::Color(0xffffff99));
+		}
+	}
+
 private:
 	sf::RectangleShape button;
 	sf::Text buttonText;
 	sf::Texture icon;
 	sf::Sprite iconSprite;
-	bool pressed;
+	bool pressed = false;
+	bool disabled = false;
 };
