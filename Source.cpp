@@ -444,6 +444,10 @@ int main()
                     {
                         tileMap[layer.first][x.first][y.first].tileObject.setOpacity(80);
                     }
+                    else
+                    {
+                        tileMap[layer.first][x.first][y.first].tileObject.setOpacity(255);
+                    }
 
                     tileMap[layer.first][x.first][y.first].tileObject.draw(window);
                 }
