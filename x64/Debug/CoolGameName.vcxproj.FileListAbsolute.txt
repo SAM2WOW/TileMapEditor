@@ -1,0 +1,2 @@
+F:\School\CoolGameName\x64\Debug\CoolGameName.exe
+F:\School\TileMapEditor\x64\Debug\CoolGameName.exe
