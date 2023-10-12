@@ -344,6 +344,10 @@ int main()
                     {
                         tileMap[layer][x][y].tile = tile;
                         tileMap[layer][x][y].meta = "";
+
+                        // add the tile object
+                        tileMap[layer][x][y].tileObject.setPosition(sf::Vector2f(x * CELLSIZE, y * CELLSIZE));
+                        tileMap[layer][x][y].tileObject.setTexture(tileTexture[tile]);
                     }
                 }
 
