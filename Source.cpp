@@ -15,7 +15,7 @@ const int TILESIZE = 16;
 const int LAYERSIZE = 3;
 const int MAXLAYERSIZE = 10;
 const int HINTGRIDSIZE = 3;
-const int PANNINGSPEED = 4;
+const int PANNINGSPEED = 10;
 
 enum Tool { draw, erase, eyedropper, fill, zoom};
 int currentTool = Tool::draw;
@@ -42,19 +42,66 @@ std::map<int, std::map<int, std::map<int, tileData>>> tileMap;
 
 bool isOverBtn = false;
 
+bool doesTileExist(int x, int y)
+{
+    if (tileMap[currentLayer].find(x) != tileMap[currentLayer].end())
+    {
+        if (tileMap[currentLayer][x].find(y) != tileMap[currentLayer][x].end())
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// recursively check if the space have been enclosed within the limited range
+
 // flood filling algorithm
 // https://www.educative.io/answers/flood-fill-algorithm-in-cpp
 //
 // TODO: Actually finish this
 //
-void floodFill(int x, int y, int tile)
+void floodFill(int x, int y, int currentTile, int newTile, int depth = 0)
 {
-    // find the bounds of the map
-    int minX = 0;
-    int maxX = 0;
-    int minY = 0;
-    int maxY = 0;
+    // limit range
+    if (depth > 32)
+    {
+        return;
+    }
 
+    // check if the tile exist
+    if (doesTileExist(x, y))
+    {
+        // base cases
+        if (tileMap[currentLayer][x][y].tile != currentTile)
+        {
+            return;
+        }
+        
+        if (tileMap[currentLayer][x][y].tile == newTile)
+        {
+            return;
+        }
+    }
+    else
+    {
+        if (currentTile != -1)
+        {
+            return;
+        }
+    }
+
+    // replace the color
+    tileMap[currentLayer][x][y].tile = newTile;
+
+    std::cout << "coloring: " << x << " " << y << " " << tileMap[currentLayer][x][y].tile << std::endl;
+
+    // recursively call for north, east, south, west
+    floodFill(x, y - 1, currentTile, newTile, depth + 1);
+    floodFill(x + 1, y, currentTile, newTile, depth + 1);
+    floodFill(x, y + 1, currentTile, newTile, depth + 1);
+    floodFill(x - 1, y, currentTile, newTile, depth + 1);
 }
 
 int main()
@@ -165,7 +212,7 @@ int main()
 
                     if (currentTool == Tool::draw || currentTool == Tool::erase)
                     {
-                        brushSize += event.mouseWheelScroll.delta;
+                        brushSize += int(event.mouseWheelScroll.delta);
                         if (brushSize < 0)
                         {
                             brushSize = 0;
@@ -173,9 +220,10 @@ int main()
                     }
                     else if (currentTool == Tool::zoom)
                     {
-                        zoomSize += event.mouseWheelScroll.delta;
+                        zoomSize += int(event.mouseWheelScroll.delta);
 
-                        worldView.zoom(1 + event.mouseWheelScroll.delta / 10.f);
+                        //worldView.zoom(1 + event.mouseWheelScroll.delta / 10.f);
+                        worldView.setSize(1280.f * (1 + zoomSize / 10.f), 720.f * (1 + zoomSize / 10.f));
                     }
                 }
             
@@ -222,6 +270,15 @@ int main()
                 {
                     if (toolBar[i].isMouseOver(window))
                     {
+                        // click zoom again to reset
+                        if (currentTool == Tool::zoom && i == Tool::zoom)
+                        {
+                            std::cout << "Reset Zoom" << std::endl;
+                            zoomSize = 0;
+                            worldView.setSize(1280.f, 720.f);
+                            worldView.setCenter(640.f, 320.f);
+                        }
+
                         // clear other button
                         for (int j = 0; j < RADIOTOOLSIZE; j++)
                         {
@@ -231,13 +288,6 @@ int main()
 
                         std::cout << "Tool: " << currentTool << std::endl;
 
-                        // click zoom again to reset
-                        if (i == Tool::zoom)
-                        {
-                            std::cout << "Reset Zoom" << std::endl;
-                            zoomSize = 0;
-                            worldView.zoom(1.f);
-                        }
                     }
                 }
 
@@ -322,11 +372,13 @@ int main()
                         std::cout << "Tile: " << currentTile << std::endl;
 
                         // for quality of life, also changet the tool to draw
+                        /*
                         currentTool = Tool::draw;
                         for (int j = 0; j < RADIOTOOLSIZE; j++)
                         {
                             toolBar[j].press(j == currentTool);
                         }
+                        */
                     }
                 }
 
@@ -429,7 +481,16 @@ int main()
                         break;
                     
                     case Tool::fill:
-                        tileMap[currentLayer][lastGridPos.x][lastGridPos.y].tile = currentTile;
+                        if (doesTileExist(lastGridPos.x, lastGridPos.y))
+                        {
+                            floodFill(lastGridPos.x, lastGridPos.y, tileMap[currentLayer][lastGridPos.x][lastGridPos.y].tile, currentTile);
+                        } 
+                        else
+                        {
+                            std::cout << "Tile does not exist" << std::endl;
+                            floodFill(lastGridPos.x, lastGridPos.y, -1, currentTile);
+                        }
+
                         break;
                     
                     case Tool::zoom:
@@ -450,7 +511,7 @@ int main()
                 {
                     hintBox.setPosition((lastGridPos.x + i) * CELLSIZE, (lastGridPos.y + j) * CELLSIZE);
                     hintBox.setFillColor(sf::Color(0, 0, 0, 0));
-                    hintBox.setOutlineThickness(1);
+                    hintBox.setOutlineThickness(std::max(1, zoomSize / 4));
 
                     // change the color of the hint box based on distance from the mouse
                     if (abs(i) < brushSize + 1 && abs(j) < brushSize + 1) {
@@ -483,7 +544,7 @@ int main()
         }
         else if (currentTool == Tool::zoom)
         {
-            brushText.setString("Scroll Mouse to Zoom\tHold Mouse Click to Pan\tClick Zoom Button to Reset");
+            brushText.setString("Zoom: " + std::to_string(zoomSize) + "\tScroll Mouse to Zoom\tHold Mouse Click to Pan\tClick Zoom Button to Reset");
             window.draw(brushText);
         }
 
