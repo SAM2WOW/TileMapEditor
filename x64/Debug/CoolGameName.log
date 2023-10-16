@@ -9,41 +9,41 @@ F:\School\TileMapEditor\Source.cpp(116,71): warning C4244: 'argument': conversio
           [
               T=float
           ]
-F:\School\TileMapEditor\Source.cpp(281,31): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-F:\School\TileMapEditor\Source.cpp(282,31): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-F:\School\TileMapEditor\Source.cpp(363,98): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+F:\School\TileMapEditor\Source.cpp(285,31): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+F:\School\TileMapEditor\Source.cpp(286,31): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+F:\School\TileMapEditor\Source.cpp(367,98): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-F:\School\TileMapEditor\Source.cpp(363,84): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+F:\School\TileMapEditor\Source.cpp(367,84): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-F:\School\TileMapEditor\Source.cpp(441,30): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
+F:\School\TileMapEditor\Source.cpp(445,30): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
           with
           [
               T=int
           ]
-F:\School\TileMapEditor\Source.cpp(442,30): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
+F:\School\TileMapEditor\Source.cpp(446,30): warning C4244: '=': conversion from 'float' to 'T', possible loss of data
           with
           [
               T=int
           ]
-F:\School\TileMapEditor\Source.cpp(486,181): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+F:\School\TileMapEditor\Source.cpp(490,181): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-F:\School\TileMapEditor\Source.cpp(486,149): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+F:\School\TileMapEditor\Source.cpp(490,149): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-F:\School\TileMapEditor\Source.cpp(554,93): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-F:\School\TileMapEditor\Source.cpp(554,61): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-F:\School\TileMapEditor\Source.cpp(556,57): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+F:\School\TileMapEditor\Source.cpp(558,93): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+F:\School\TileMapEditor\Source.cpp(558,61): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+F:\School\TileMapEditor\Source.cpp(560,57): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
           with
           [
               _Ty=int

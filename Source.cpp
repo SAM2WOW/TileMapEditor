@@ -162,6 +162,10 @@ int main()
     Button saveBtn(sf::Vector2f(1200.f, 260.f), "Save", MyFont, "src/assets/save.png");
     Button loadBtn(sf::Vector2f(1200.f, 330.f), "Load", MyFont, "src/assets/load.png");
 
+    // disable the undo and redo because I haven't got time to work on it
+    undoBtn.setDisabled(true);
+    redoBtn.setDisabled(true);
+
     // add tool bar buttons into an array
     Button toolBar[TOOLSIZE] = { toolBtn1, toolBtn2, toolBtn3, toolBtn4, toolBtn5, saveBtn, loadBtn, clearBtn, undoBtn, redoBtn};
 

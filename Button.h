@@ -68,19 +68,17 @@ public:
 	}
 	
 	bool isMouseOver(sf::RenderWindow& window) {
-		if (disabled) {
-			return false;
-		}
-
 		sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 		sf::FloatRect bounds = button.getGlobalBounds();
 
-		if (bounds.contains(mousePos)) {
-			button.setFillColor(sf::Color(0x4b5643ff));
-			iconSprite.setScale(1.2f, 1.2f);
-		} else {
-			button.setFillColor(sf::Color(0x2d2f31ff));
-			iconSprite.setScale(1.f, 1.f);
+		if (!disabled) {
+			if (bounds.contains(mousePos)) {
+				button.setFillColor(sf::Color(0x4b5643ff));
+				iconSprite.setScale(1.2f, 1.2f);
+			} else {
+				button.setFillColor(sf::Color(0x2d2f31ff));
+				iconSprite.setScale(1.f, 1.f);
+			}
 		}
 
 		return bounds.contains(mousePos);
@@ -120,9 +118,13 @@ public:
 
 		if (disabled) {
 			buttonText.setFillColor(sf::Color(0xffffff10));
+			iconSprite.setColor(sf::Color(0xffffff10));
+			button.setFillColor(sf::Color(0x222325ff));
 		}
 		else {
 			buttonText.setFillColor(sf::Color(0xffffff99));
+			iconSprite.setColor(sf::Color(0xffffffff));
+			button.setFillColor(sf::Color(0x2d2f31ff));
 		}
 	}
 
